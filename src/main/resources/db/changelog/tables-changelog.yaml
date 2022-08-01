@@ -1,0 +1,145 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-tables
+      author: ivars
+      changes:
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: customer_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+
+        - createTable:
+            tableName: account
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: account_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: iban
+                  type: VARCHAR(32)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: customer_id
+                  type: BIGINT
+
+        - createTable:
+            tableName: account_balance
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: account_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                   constraints:
+                     nullable: false
+                   name: currency
+                   type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  type: DECIMAL(19, 2)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: account_id
+                  type: BIGINT
+
+        - addForeignKeyConstraint:
+            baseColumnNames: customer_id
+            baseTableName: account
+            referencedColumnNames:  id
+            referencedTableName: customer
+            constraintName: fk_account_customer
+
+        - addForeignKeyConstraint:
+            baseColumnNames: account_id
+            baseTableName: account_balance
+            referencedColumnNames: id
+            referencedTableName: account
+            constraintName: fk_balance_account
+
+        - createTable:
+            tableName: exchange_rate
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: exchange_rate_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: source_currency
+                  type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: target_currency
+                  type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: rate
+                  type: DECIMAL(10, 5)
+
+        - insert:
+            tableName: exchange_rate
+            columns:
+              - column:
+                  name: source_currency
+                  value: EUR
+              - column:
+                  name: target_currency
+                  value: GBP
+              - column:
+                  name: rate
+                  value: 0.83940
+        - insert:
+            tableName: exchange_rate
+            columns:
+              - column:
+                  name: source_currency
+                  value: EUR
+              - column:
+                  name: target_currency
+                  value: USD
+              - column:
+                  name: rate
+                  value: 1.0207
+
+        - createIndex:
+            tableName: account
+            columns:
+              - column:
+                  name: iban
+            indexName: idx_account_iban
+            unique: true
+
